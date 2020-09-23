@@ -40,6 +40,7 @@ public class MenuScreen extends ScreenAdapter {
 
     private void transitionScreen() {
         Gdx.app.postRunnable(() -> {
+            Gdx.input.setInputProcessor(null);
             dispose();
             game.setScreen(new GameScreen(game));
         });

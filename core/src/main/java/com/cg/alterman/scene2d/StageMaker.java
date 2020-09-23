@@ -43,6 +43,8 @@ public class StageMaker {
         Texture playTexture = new Texture(Gdx.files.internal("ui/ic_play.png"));
         usedTextures.add(playTexture);
         HoverImageButton playButton = new HoverImageButton(new TextureRegionDrawable(playTexture));
+        playButton.setHoverAlpha(.75f);
+        playButton.setClickAlpha(.5f);
         playButton.getColor().a = 0f;
 
         gameNameLabel.setTypingListener(new TypingAdapter() {
@@ -64,9 +66,9 @@ public class StageMaker {
             }
         });
 
-        centerTable.add(gameNameLabel).space(30f);
+        centerTable.add(gameNameLabel).space(25f);
         centerTable.row();
-        centerTable.add(playButton).space(30f);
+        centerTable.add(playButton).space(25f);
 
         stage.addActor(centerTable);
     }
