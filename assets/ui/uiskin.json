@@ -135,7 +135,7 @@
       font: window
     }
     list: {
-      font: list
+      font: default
     }
     subtitle: {
       font: subtitle
@@ -143,14 +143,14 @@
   }
   com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
     default: {
-      font: list
+      font: default
       fontColorSelected: white
       fontColorUnselected: white
       selection: selection
       background: list
     }
     list-nobg: {
-      font: list
+      font: default
       fontColorSelected: white
       fontColorUnselected: white
       selection: selection

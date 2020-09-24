@@ -16,7 +16,7 @@ public class Alterman extends Game {
         Gdx.app.setLogLevel(Gdx.app.LOG_DEBUG);
 
         skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
-        skin.getFont("default").getData().setScale(5.0f);
+        skin.getFont("subtitle").getData().setScale(5.0f);
 
         setScreen(new MenuScreen(this));
     }

@@ -68,8 +68,13 @@ public class Player extends InputAdapter {
                 flipTextureX, flipTextureY);
     }
 
+    public void stopLeftRightMovement() {
+        playerBody.setLinearVelocity(0, playerBody.getLinearVelocity().y);
+    }
+
     @Override
     public boolean keyDown(int keycode) {
+        // TODO: Fix movement and those gigantic values
         Vector2 playerVelocity = playerBody.getLinearVelocity();
         if ((keycode == Input.Keys.W || keycode == Input.Keys.UP) && playerVelocity.y == 0) {
             /*playerBody.applyLinearImpulse(new Vector2(0, 10600),
@@ -85,7 +90,7 @@ public class Player extends InputAdapter {
             /*playerBody.applyLinearImpulse(new Vector2(600, 0),
                     playerBody.getWorldCenter(), true);*/
             //playerBody.setLinearVelocity(-200, playerVelocity.y);
-            playerBody.applyForceToCenter(-10000, 0, true);
+            playerBody.applyForceToCenter(-15000, 0, true);
             playerCurrentTexture = playerWalkTexture;
             flipTextureX = true;
         } else if ((keycode == Input.Keys.S || keycode == Input.Keys.DOWN) && playerVelocity.y == 0) {
@@ -100,7 +105,7 @@ public class Player extends InputAdapter {
             flipTextureY = !flipTextureY;
         } else if (keycode == Input.Keys.D || keycode == Input.Keys.RIGHT) {
             //playerBody.setLinearVelocity(200, playerVelocity.y);
-            playerBody.applyForceToCenter(10000, 0, true);
+            playerBody.applyForceToCenter(15000, 0, true);
             playerCurrentTexture = playerWalkTexture;
             flipTextureX = false;
         } else {
@@ -129,11 +134,7 @@ public class Player extends InputAdapter {
     }
 
     public float getXPosition() {
-        if (flipTextureY) {
-            return playerBody.getPosition().x + (playerCurrentTexture.getWidth() / 2f) + (playerCurrentTexture.getHeight() / 2f);
-        } else {
-            return playerBody.getPosition().x + (playerCurrentTexture.getWidth() / 2f) - (playerCurrentTexture.getHeight() / 2f);
-        }
+        return playerBody.getPosition().x;
     }
 
     public interface WorldChangeListener {

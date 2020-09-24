@@ -1,6 +1,7 @@
 package com.cg.alterman.scene2d;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -37,8 +38,8 @@ public class StageMaker {
         Table centerTable = new Table();
         centerTable.setFillParent(true);
 
-        String gameNameString = "{COLOR=0FA7F9}{FADE=0;1;1.5}ALTER{WAIT}{COLOR=A1A1A1}MAN";
-        TypingLabel gameNameLabel = new TypingLabel(gameNameString, skin);
+        String gameNameString = "{WAIT}{COLOR=0FA7F9}{FADE=0;1;1.5}ALTER{WAIT}{COLOR=A1A1A1}MAN";
+        TypingLabel gameNameLabel = new TypingLabel(gameNameString, skin, "subtitle", Color.WHITE);
 
         Texture playTexture = new Texture(Gdx.files.internal("ui/ic_play.png"));
         usedTextures.add(playTexture);

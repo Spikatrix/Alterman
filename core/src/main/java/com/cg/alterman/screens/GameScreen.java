@@ -1,6 +1,7 @@
 package com.cg.alterman.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ScreenAdapter;
@@ -11,14 +12,19 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cg.alterman.Alterman;
 import com.cg.alterman.Constants;
 import com.cg.alterman.ShapeDrawer;
 import com.cg.alterman.entity.Ground;
 import com.cg.alterman.entity.Player;
+import com.cg.alterman.entity.item.Item;
+import com.cg.alterman.entity.item.Jam;
+import com.cg.alterman.entity.item.Paper;
 
 public class GameScreen extends ScreenAdapter implements InputProcessor {
     final Alterman game;
@@ -31,8 +37,11 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
     private boolean centerCamera;
     private World gameWorld;
     private Ground ground;
+    private Array<Item> items;
     private int levelWidth = 768;
+    private boolean worldInverted;
     private Box2DDebugRenderer debugRenderer;
+    private Stage stage;
 
     public GameScreen(Alterman game) {
         this.game = game;
@@ -41,9 +50,11 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
         this.centerCamera = true;
         this.usedTextures = new Array<>();
         this.batch = new SpriteBatch();
+        this.stage = new Stage(new ScreenViewport());
         this.shapeDrawer = new ShapeDrawer(this.batch, this.usedTextures);
 
         initWorld();
+        initWorldObjects();
     }
 
     private void initWorld() {
@@ -52,19 +63,33 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
         this.player = new Player(gameWorld, ground.getHeight(), () -> {
             Vector2 gravity = gameWorld.getGravity();
             gravity.y *= -1;
+            worldInverted = !worldInverted;
             gameWorld.setGravity(gravity);
         });
         debugRenderer = new Box2DDebugRenderer();
     }
 
+    private void initWorldObjects() {
+        items = new Array<>();
+
+        Jam jam = new Jam();
+        jam.setPosition(new Vector2(levelWidth / 2f, ground.getHeight()));
+        items.add(jam);
+
+        Paper paper = new Paper();
+        paper.setPosition(new Vector2(levelWidth / 4f, -ground.getHeight() - paper.getHeight()));
+        items.add(paper);
+    }
+
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(new InputMultiplexer(this, player));
+        Gdx.input.setInputProcessor(new InputMultiplexer(this, stage, player));
     }
 
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height, centerCamera);
+        stage.getViewport().update(width, height, true);
         centerCamera = false; // Center camera only the first time around
     }
 
@@ -85,11 +110,18 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
                 Constants.UNDERWORLD_SKY_COLOR, Constants.UNDERWORLD_SKY_COLOR, Constants.UNDERWORLD_COLOR, Constants.UNDERWORLD_COLOR);
         ground.render(batch);
         player.render(batch);
+        for (Item item : items) {
+            item.render(batch, worldInverted, game.getSkin().getFont("list"), player.getXPosition());
+        }
         batch.end();
 
         debugRenderer.render(gameWorld, viewport.getCamera().combined);
 
+        stage.act(delta);
+        stage.draw();
+
         gameWorld.step(delta * 4, 6, 2);
+        // TODO: What's up with the * 4??
     }
 
     private void followPlayer(float delta) {
@@ -101,7 +133,7 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
         // TODO: Clamp this properly ^
 
         float posY = viewport.getWorldHeight() / 2;
-        if (gameWorld.getGravity().y > 0) {
+        if (worldInverted) {
             posY *= -1;
         }
 
@@ -115,6 +147,9 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
         batch.dispose();
         ground.dispose();
         player.dispose();
+        for (Item item : items) {
+            item.dispose();
+        }
         debugRenderer.dispose();
         for (Texture texture : usedTextures) {
             texture.dispose();
@@ -123,22 +158,15 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
-        /*OrthographicCamera camera = (OrthographicCamera) viewport.getCamera();
-        if (keycode == Input.Keys.DOWN) {
-            camera.translate(0, -40);
-        } else if (keycode == Input.Keys.UP) {
-            camera.translate(0, 40);
-        } else if (keycode == Input.Keys.RIGHT) {
-            camera.translate(40, 0);
-        } else if (keycode == Input.Keys.LEFT) {
-            camera.translate(-40, 0);
-        } else if (keycode == Input.Keys.MINUS) {
-            camera.zoom += .15f;
-        } else if (keycode == Input.Keys.EQUALS) {
-            camera.zoom -= .15f;
-        } else {
-            return false;
-        }*/
+        if (keycode == Input.Keys.E) {
+            for (Item item : items) {
+                if (item.isUseable()) {
+                    player.stopLeftRightMovement();
+                    item.useItem(stage, game.getSkin());
+                    return true;
+                }
+            }
+        }
 
         return false;
     }
