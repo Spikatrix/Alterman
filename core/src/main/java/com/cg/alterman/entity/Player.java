@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -30,7 +31,6 @@ public class Player extends InputAdapter {
 
         createPlayerTexture();
         createPlayer(world);
-
     }
 
     private void createPlayerTexture() {
@@ -59,7 +59,22 @@ public class Player extends InputAdapter {
         playerBody.createFixture(fixtureDef);
     }
 
+    public void switchWorld(int yPos) {
+        Vector2 pos = playerBody.getPosition();
+        if (!flipTextureY) {
+            pos.y -= (yPos + playerCurrentTexture.getHeight());
+        } else {
+            pos.y += (yPos + playerCurrentTexture.getHeight());
+        }
+        playerBody.setTransform(pos, 0);
+        flipTextureY = !flipTextureY;
+    }
+
     public void render(SpriteBatch batch) {
+        if (playerBody.getPosition().x - (playerCurrentTexture.getHeight() / 2f) > 2000 && playerBody.getLinearVelocity().x > 0) {
+            stopLeftRightMovement();
+        }
+
         batch.draw(playerCurrentTexture, playerBody.getPosition().x - (playerCurrentTexture.getWidth() / 2f),
                 playerBody.getPosition().y - (playerCurrentTexture.getHeight() / 2f),
                 playerCurrentTexture.getWidth(), playerCurrentTexture.getHeight(),
@@ -70,6 +85,7 @@ public class Player extends InputAdapter {
 
     public void stopLeftRightMovement() {
         playerBody.setLinearVelocity(0, playerBody.getLinearVelocity().y);
+        playerCurrentTexture = playerIdleTexture;
     }
 
     @Override
@@ -77,35 +93,20 @@ public class Player extends InputAdapter {
         // TODO: Fix movement and those gigantic values
         Vector2 playerVelocity = playerBody.getLinearVelocity();
         if ((keycode == Input.Keys.W || keycode == Input.Keys.UP) && playerVelocity.y == 0) {
-            /*playerBody.applyLinearImpulse(new Vector2(0, 10600),
-                    playerBody.getWorldCenter(), true);*/
-            //playerBody.setLinearVelocity(playerVelocity.x, 1000);
             playerCurrentTexture = playerJumpTexture;
             if (!flipTextureY) {
-                playerBody.applyForceToCenter(0, 10000, true);
+                playerBody.applyForceToCenter(0, 8000, true);
             } else {
-                playerBody.applyForceToCenter(0, -10000, true);
+                playerBody.applyForceToCenter(0, -8000, true);
             }
         } else if (keycode == Input.Keys.A || keycode == Input.Keys.LEFT) {
-            /*playerBody.applyLinearImpulse(new Vector2(600, 0),
-                    playerBody.getWorldCenter(), true);*/
-            //playerBody.setLinearVelocity(-200, playerVelocity.y);
-            playerBody.applyForceToCenter(-15000, 0, true);
+            playerBody.applyForceToCenter(-10000, 0, true);
             playerCurrentTexture = playerWalkTexture;
             flipTextureX = true;
         } else if ((keycode == Input.Keys.S || keycode == Input.Keys.DOWN) && playerVelocity.y == 0) {
-            Vector2 pos = playerBody.getPosition();
-            if (!flipTextureY) {
-                pos.y -= ((groundHeight * 2) + playerCurrentTexture.getHeight());
-            } else {
-                pos.y += ((groundHeight * 2) + playerCurrentTexture.getHeight());
-            }
-            playerBody.setTransform(pos, 0);
             worldChangeListener.onSwitchWorld();
-            flipTextureY = !flipTextureY;
-        } else if (keycode == Input.Keys.D || keycode == Input.Keys.RIGHT) {
-            //playerBody.setLinearVelocity(200, playerVelocity.y);
-            playerBody.applyForceToCenter(15000, 0, true);
+        } else if ((keycode == Input.Keys.D || keycode == Input.Keys.RIGHT) && playerBody.getPosition().x < 2048) {
+            playerBody.applyForceToCenter(10000, 0, true);
             playerCurrentTexture = playerWalkTexture;
             flipTextureX = false;
         } else {
@@ -117,8 +118,8 @@ public class Player extends InputAdapter {
 
     @Override
     public boolean keyUp(int keycode) {
-        if (keycode == Input.Keys.A || keycode == Input.Keys.D
-                || keycode == Input.Keys.LEFT || keycode == Input.Keys.RIGHT) {
+        if ((keycode == Input.Keys.A || keycode == Input.Keys.LEFT && playerBody.getLinearVelocity().x < 0) ||
+                (keycode == Input.Keys.RIGHT || keycode == Input.Keys.D && playerBody.getLinearVelocity().x > 0)) {
             playerBody.setLinearVelocity(0, playerBody.getLinearVelocity().y);
             playerCurrentTexture = playerIdleTexture;
             return true;
@@ -135,6 +136,30 @@ public class Player extends InputAdapter {
 
     public float getXPosition() {
         return playerBody.getPosition().x;
+    }
+
+    public float getYPosition() {
+        return playerBody.getPosition().y;
+    }
+
+    public boolean intersectsBarrier(Barrier wall, int yPos) {
+        // Kinda broken but I don't have time to fix it
+        float y;
+
+        Rectangle wallRect = wall.getPositionRect();
+        if (!flipTextureY) {
+            y = -(yPos + playerCurrentTexture.getHeight() + wallRect.getHeight() / 2);
+        } else {
+            y = (yPos + playerCurrentTexture.getHeight());
+        }
+
+        y += playerBody.getPosition().y;
+
+        Rectangle playerRect = new Rectangle(playerBody.getPosition().x, y,
+                playerCurrentTexture.getWidth(), playerCurrentTexture.getHeight());
+
+        return playerRect.overlaps(wallRect) ||
+                (y - wallRect.getHeight() < groundHeight && y + groundHeight > -groundHeight);
     }
 
     public interface WorldChangeListener {

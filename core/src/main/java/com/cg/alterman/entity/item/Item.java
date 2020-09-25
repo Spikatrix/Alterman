@@ -24,8 +24,8 @@ public class Item {
     private String usedInfo;
     private String unusedInfo;
 
-    public Item(String itemTextureLocation) {
-        this.texture = new Texture(Gdx.files.internal(itemTextureLocation));
+    public Item(String itemTextureName) {
+        this.texture = new Texture(Gdx.files.internal("items/" + itemTextureName));
         this.position = new Vector2();
     }
 
@@ -33,14 +33,27 @@ public class Item {
         this.position = position;
     }
 
-    public void render(SpriteBatch batch, boolean worldInverted, BitmapFont font, float playerXPosition) {
+    public void render(SpriteBatch batch, boolean worldInverted, BitmapFont font, float playerXPosition, float playerYPosition) {
         if (texture == null) {
             return;
         }
 
         batch.draw(texture, position.x, position.y);
 
-        if (!isUsing && Math.abs(playerXPosition - position.x - texture.getWidth() / 2f) < (texture.getWidth() * 2)) {
+        playerYPosition /= 2;
+        if (worldInverted) {
+            playerYPosition -= 50;
+        }
+
+        if (usedInfo.contains("zebra")) { // Workarounds because I don't have time to debug and fix xD
+            playerYPosition += 50;
+        } else if (usedInfo.contains("leap")) {
+            playerYPosition += 200;
+        } else if (usedInfo.contains("Awes")) {
+            playerYPosition += 150;
+        }
+
+        if (!isUsing && (Math.abs(playerYPosition - position.y) <= 25) && Math.abs(playerXPosition - position.x - texture.getWidth() / 2f) < (texture.getWidth() * 2)) {
             if (worldInverted && position.y < 0) {
                 font.setColor(Color.WHITE);
                 font.draw(batch, "Press E to use", position.x - 20, position.y - 60);
