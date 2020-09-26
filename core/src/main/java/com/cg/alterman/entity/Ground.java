@@ -25,6 +25,7 @@ public class Ground {
     private void createGroundTexture() {
         groundTexture = new Texture(Gdx.files.internal("ground.png"));
         groundTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        groundTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
     }
 
     private void createGround(World world) {

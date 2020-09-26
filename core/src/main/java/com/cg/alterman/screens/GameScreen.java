@@ -241,7 +241,7 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
         stage.act(delta);
         stage.draw();
 
-        gameWorld.step(delta, 6, 2);
+        gameWorld.step(1 / 60f, 6, 2);
     }
 
     private void followPlayer(float delta) {
