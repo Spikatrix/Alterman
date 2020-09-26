@@ -62,6 +62,8 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
 
         initWorld();
         initWorldObjects();
+
+        game.cueMusic();
     }
 
     private void initWorld() {
@@ -74,35 +76,35 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
         items = new Array<>();
 
         Signpost signpost = new Signpost();
-        signpost.setPosition(new Vector2(100f, ground.getHeight()));
+        signpost.setPosition(new Vector2(100f, ground.getHeight()), game.getUseSoundEffect());
         items.add(signpost);
 
         Jam jam = new Jam();
-        jam.setPosition(new Vector2(510, ground.getHeight()));
+        jam.setPosition(new Vector2(510, ground.getHeight()), game.getUseSoundEffect());
         items.add(jam);
 
         Paper paper = new Paper();
-        paper.setPosition(new Vector2(150, -ground.getHeight() - paper.getHeight()));
+        paper.setPosition(new Vector2(150, -ground.getHeight() - paper.getHeight()), game.getUseSoundEffect());
         items.add(paper);
 
         Zebra zebra = new Zebra();
-        zebra.setPosition(new Vector2(1020, 100 + ground.getHeight()));
+        zebra.setPosition(new Vector2(1020, 100 + ground.getHeight()), game.getUseSoundEffect());
         items.add(zebra);
 
         Signpost2 signpost2 = new Signpost2();
-        signpost2.setPosition(new Vector2(1200, ground.getHeight()));
+        signpost2.setPosition(new Vector2(1200, ground.getHeight()), game.getUseSoundEffect());
         items.add(signpost2);
 
         Signpost3 signpost3 = new Signpost3();
-        signpost3.setPosition(new Vector2(1500, ground.getHeight()));
+        signpost3.setPosition(new Vector2(1500, ground.getHeight()), game.getUseSoundEffect());
         items.add(signpost3);
 
         Paper2 paper2 = new Paper2();
-        paper2.setPosition(new Vector2(levelWidth - 670, 400 + ground.getHeight()));
+        paper2.setPosition(new Vector2(levelWidth - 670, 400 + ground.getHeight()), game.getUseSoundEffect());
         items.add(paper2);
 
         Win win = new Win();
-        win.setPosition(new Vector2(levelWidth - 920, 350 + ground.getHeight()));
+        win.setPosition(new Vector2(levelWidth - 920, 350 + ground.getHeight()), game.getUseSoundEffect());
         items.add(win);
 
         Vector2[] wallPos = new Vector2[]{

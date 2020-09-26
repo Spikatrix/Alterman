@@ -1,6 +1,7 @@
 package com.cg.alterman.entity.item;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -24,13 +25,16 @@ public class Item {
     private String usedInfo;
     private String unusedInfo;
 
+    private Sound useSoundEffect;
+
     public Item(String itemTextureName) {
         this.texture = new Texture(Gdx.files.internal("items/" + itemTextureName));
         this.position = new Vector2();
     }
 
-    public void setPosition(Vector2 position) {
+    public void setPosition(Vector2 position, Sound useSoundEffect) {
         this.position = position;
+        this.useSoundEffect = useSoundEffect;
     }
 
     public void render(SpriteBatch batch, boolean worldInverted, BitmapFont font, float playerXPosition, float playerYPosition) {
@@ -50,7 +54,7 @@ public class Item {
         } else if (usedInfo.contains("leap")) {
             playerYPosition += 200;
         } else if (usedInfo.contains("Awes")) {
-            playerYPosition += 150;
+            playerYPosition += 200;
         }
 
         if (!isUsing && (Math.abs(playerYPosition - position.y) <= 25) && Math.abs(playerXPosition - position.x - texture.getWidth() / 2f) < (texture.getWidth() * 2)) {
@@ -60,7 +64,11 @@ public class Item {
                 useable = true;
             } else if (!worldInverted && position.y > 0) {
                 font.setColor(Color.BLACK);
-                font.draw(batch, "Press E to use", position.x - 20, position.y + 120);
+                if (usedInfo.contains("leap") || usedInfo.contains("Awes")) {
+                    font.draw(batch, "Press E to use", position.x - 20, position.y - 70);
+                } else {
+                    font.draw(batch, "Press E to use", position.x - 20, position.y + 120);
+                }
                 useable = true;
             } else {
                 useable = false;
@@ -87,6 +95,7 @@ public class Item {
                     if (usedInfo != null) {
                         showUsedDialog(usedInfo, stage, skin);
                     }
+                    useSoundEffect.play();
                     dispose();
                 } else {
                     if (unusedInfo != null) {

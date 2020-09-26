@@ -4,20 +4,21 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
 import com.cg.alterman.Alterman;
+import com.cg.alterman.Constants;
 
 /** Launches the GWT application. */
 public class GwtLauncher extends GwtApplication {
 		////USE THIS CODE FOR A FIXED SIZE APPLICATION
 		@Override
 		public GwtApplicationConfiguration getConfig () {
-				return new GwtApplicationConfiguration(640, 480);
+				return new GwtApplicationConfiguration((int) Constants.WORLD_WIDTH, (int) Constants.WORLD_HEIGHT);
 		}
 		////END CODE FOR FIXED SIZE APPLICATION
 
 		////UNCOMMENT THIS CODE FOR A RESIZABLE APPLICATION
 		//	PADDING is to avoid scrolling in iframes, set to 20 if you have problems
 		//	private static final int PADDING = 0;
-		//	
+		//
 		//	@Override
 		//	public GwtApplicationConfiguration getConfig() {
 		//		int w = Window.getClientWidth() - PADDING;
@@ -29,7 +30,7 @@ public class GwtLauncher extends GwtApplication {
 		//		cfg.preferFlash = false;
 		//		return cfg;
 		//	}
-		//	
+		//
 		//	class ResizeListener implements ResizeHandler {
 		//		@Override
 		//		public void onResize(ResizeEvent event) {
@@ -45,7 +46,7 @@ public class GwtLauncher extends GwtApplication {
 		////END OF CODE FOR RESIZABLE APPLICATION
 
 		@Override
-		public ApplicationListener createApplicationListener () { 
+		public ApplicationListener createApplicationListener () {
 			return new Alterman();
 		}
 }
