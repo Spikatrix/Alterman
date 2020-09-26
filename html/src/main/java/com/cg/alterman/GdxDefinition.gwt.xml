@@ -3,8 +3,6 @@
 <module rename-to="html">
 	<source path="" />
 	<inherits name="com.badlogic.gdx.backends.gdx_backends_gwt" />
-	<inherits name="Box2DLights" />
-	<inherits name="com.badlogic.ashley_gwt" />
 	<inherits name="com.badlogic.gdx.physics.box2d.box2d-gwt" />
 	<inherits name="com.cg.alterman.Alterman" />
 	<inherits name="com.rafaskoberg.gdx.typinglabel.typinglabel" />
